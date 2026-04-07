@@ -7,6 +7,7 @@ import { LeftWidgetBar } from './components/layout/LeftWidgetBar';
 import { useSoundscape } from './hooks/useSoundscape';
 import { HomeMode } from './components/modes/HomeMode';
 import { FocusMode } from './components/modes/FocusMode';
+import { AmbientMode } from './components/modes/AmbientMode';
 import { TaskPanel } from './components/panels/TaskPanel';
 import { SoundscapePanel } from './components/panels/SoundscapePanel';
 import { MusicPanel } from './components/panels/MusicPanel';
@@ -20,21 +21,23 @@ function App() {
   useSoundscape();
 
   return (
-    <div className="relative w-screen h-screen overflow-hidden text-white bg-black" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+    <div className="relative w-screen h-screen overflow-hidden text-white bg-black" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
       <BackgroundLayer />
       <TopBar />
       
-      {/* Center content area */}
       <main className="relative z-30 flex items-center justify-center w-full h-full">
         {activeMode === 'home' && <HomeMode />}
         {activeMode === 'focus' && <FocusMode />}
+        {activeMode === 'ambient' && (
+          <div className="w-full h-full p-6 pt-16">
+            <AmbientMode />
+          </div>
+        )}
       </main>
 
-      {/* Bottom navigation */}
       <LeftWidgetBar />
       <BottomModeToggle />
 
-      {/* Popup panels */}
       <TaskPanel />
       <SoundscapePanel />
       <MusicPanel />

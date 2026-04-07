@@ -54,7 +54,7 @@ export const useAppStore = create(
       reorderTasks: (tasks) => set({ tasks }),
 
       // --- Theme ---
-      activeTheme: 'ocean-gradient',
+      activeTheme: 'aurora-mesh',
       setTheme: (themeId) => set({ activeTheme: themeId }),
       setActiveTheme: (themeId) => set({ activeTheme: themeId }),
 

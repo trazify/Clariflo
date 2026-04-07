@@ -21,10 +21,7 @@ export const TaskPanel = () => {
   );
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && inputValue.trim()) {
-      addTask(inputValue.trim());
-      setInputValue('');
-    }
+    if (e.key === 'Enter' && inputValue.trim()) { addTask(inputValue.trim()); setInputValue(''); }
   };
 
   const handleToggle = (id) => {
@@ -33,8 +30,8 @@ export const TaskPanel = () => {
     toggleTask(id);
     if (!task.done) {
       incrementTasksCompleted();
-      const remainingUndone = tasks.filter(t => !t.done && t.id !== id);
-      if (remainingUndone.length === 0 && tasks.length > 0) {
+      const remaining = tasks.filter(t => !t.done && t.id !== id);
+      if (remaining.length === 0 && tasks.length > 0) {
         confetti({ particleCount: 150, spread: 70, origin: { y: 0.8 }, colors: ['#7c3aed', '#a78bfa', '#fcd34d', '#34d399'] });
       }
     }
@@ -56,18 +53,18 @@ export const TaskPanel = () => {
   return (
     <>
       <div className="fixed inset-0 z-40" onClick={() => setActivePanel(null)} />
-      <div className="fixed bottom-20 left-6 z-50 w-[340px] anim-slide-up">
-        <div className="glass-panel p-6 flex flex-col gap-3 max-h-[460px]">
+      <div className="fixed bottom-16 left-5 z-50 w-[320px] anim-slide-up">
+        <div className="glass-panel p-5 flex flex-col gap-2 max-h-[400px]">
           <div className="flex items-center justify-between mb-1">
-            <h2 className="text-sm font-bold text-white/90 tracking-widest uppercase">Tasks</h2>
-            <button onClick={() => setActivePanel(null)} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-white transition-all">
+            <h2 className="text-sm font-bold text-white/80 tracking-widest uppercase">Tasks</h2>
+            <button onClick={() => setActivePanel(null)} className="p-1 rounded-lg hover:bg-white/10 text-white/35 hover:text-white transition-all cursor-pointer">
               <X size={16} />
             </button>
           </div>
 
           <div className="flex flex-col gap-1 overflow-y-auto custom-scrollbar pr-1 flex-1">
             {tasks.length === 0 ? (
-              <div className="py-10 text-center text-white/25 text-sm">No tasks yet. Add one below.</div>
+              <div className="py-8 text-center text-white/20 text-sm">No tasks yet</div>
             ) : (
               <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                 <SortableContext items={tasks.map(t => t.id)} strategy={verticalListSortingStrategy}>
@@ -79,21 +76,21 @@ export const TaskPanel = () => {
             )}
           </div>
 
-          <div className="relative">
+          <div className="relative mt-1">
             <input
               type="text"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Type your priority"
-              className="w-full bg-white/5 text-white placeholder-white/25 border border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:border-white/20 transition-colors pr-10"
+              placeholder="Add a task..."
+              className="w-full bg-white/5 text-white placeholder-white/20 border border-white/8 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-white/20 transition-colors pr-10"
             />
             {inputValue.trim() && (
               <button
                 onClick={() => { addTask(inputValue.trim()); setInputValue(''); }}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg bg-accent flex items-center justify-center text-white hover:scale-105 active:scale-95 transition-transform cursor-pointer"
+                className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-lg bg-[#7c3aed] flex items-center justify-center text-white active:scale-90 transition-transform cursor-pointer"
               >
-                <Plus size={14} strokeWidth={3} />
+                <Plus size={13} strokeWidth={3} />
               </button>
             )}
           </div>
