@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useAppStore } from './store/useAppStore';
 import { BackgroundLayer } from './components/layout/BackgroundLayer';
 import { TopBar } from './components/layout/TopBar';
@@ -14,15 +14,30 @@ import { MusicPanel } from './components/panels/MusicPanel';
 import { ThemePanel } from './components/panels/ThemePanel';
 import { StatsPanel } from './components/panels/StatsPanel';
 import { SettingsPanel } from './components/panels/SettingsPanel';
+import { AuthPanel } from './components/panels/AuthPanel';
+import { isLoggedIn } from './services/api';
 
 function App() {
   const activeMode = useAppStore(state => state.activeMode);
+  const isAuthenticated = useAppStore(state => state.isAuthenticated);
+  const loadUserData = useAppStore(state => state.loadUserData);
   
   useSoundscape();
+
+  // On mount, if user has a valid token, load data from backend
+  useEffect(() => {
+    if (isLoggedIn()) {
+      loadUserData();
+    }
+  }, []);
 
   return (
     <div className="relative w-screen h-screen overflow-hidden text-white bg-black" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
       <BackgroundLayer />
+
+      {/* Show auth panel if not logged in */}
+      {!isAuthenticated && <AuthPanel />}
+
       <TopBar />
       
       <main className="relative z-30 flex items-center justify-center w-full h-full">
