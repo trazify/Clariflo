@@ -10,6 +10,15 @@ router.use(authMiddleware);
 // GET /api/stats — Get all stat entries for the user
 router.get('/', async (req, res) => {
   try {
+    if (global.isMockDB) {
+      global.mockStats = global.mockStats || [];
+      const userStats = global.mockStats
+        .filter(s => s.userId === req.userId)
+        .sort((a, b) => b.date.localeCompare(a.date))
+        .slice(0, 30);
+      return res.json(userStats);
+    }
+
     const stats = await Stat.find({ userId: req.userId }).sort({ date: -1 }).limit(30);
     res.json(stats);
   } catch (error) {
@@ -23,6 +32,25 @@ router.post('/session', async (req, res) => {
   try {
     const { minutes } = req.body;
     const todayStr = new Date().toLocaleDateString();
+
+    if (global.isMockDB) {
+      global.mockStats = global.mockStats || [];
+      let stat = global.mockStats.find(s => s.userId === req.userId && s.date === todayStr);
+      if (!stat) {
+        stat = {
+          _id: Math.random().toString(36).substring(2, 11),
+          userId: req.userId,
+          date: todayStr,
+          sessions: 0,
+          focusMinutes: 0,
+          tasksCompleted: 0
+        };
+        global.mockStats.push(stat);
+      }
+      stat.sessions += 1;
+      stat.focusMinutes += (minutes || 0);
+      return res.json(stat);
+    }
 
     // Upsert: create or update today's stat
     const stat = await Stat.findOneAndUpdate(
@@ -45,6 +73,24 @@ router.post('/session', async (req, res) => {
 router.post('/task-completed', async (req, res) => {
   try {
     const todayStr = new Date().toLocaleDateString();
+
+    if (global.isMockDB) {
+      global.mockStats = global.mockStats || [];
+      let stat = global.mockStats.find(s => s.userId === req.userId && s.date === todayStr);
+      if (!stat) {
+        stat = {
+          _id: Math.random().toString(36).substring(2, 11),
+          userId: req.userId,
+          date: todayStr,
+          sessions: 0,
+          focusMinutes: 0,
+          tasksCompleted: 0
+        };
+        global.mockStats.push(stat);
+      }
+      stat.tasksCompleted += 1;
+      return res.json(stat);
+    }
 
     const stat = await Stat.findOneAndUpdate(
       { userId: req.userId, date: todayStr },

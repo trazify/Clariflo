@@ -10,6 +10,18 @@ router.use(authMiddleware);
 // GET /api/settings — Get user settings
 router.get('/', async (req, res) => {
   try {
+    if (global.isMockDB) {
+      global.mockUsers = global.mockUsers || [];
+      const user = global.mockUsers.find(u => u._id === req.userId);
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      return res.json({
+        username: user.username,
+        settings: user.settings
+      });
+    }
+
     const user = await User.findById(req.userId).select('settings username');
 
     if (!user) {
@@ -29,6 +41,27 @@ router.get('/', async (req, res) => {
 // PUT /api/settings — Update user settings
 router.put('/', async (req, res) => {
   try {
+    if (global.isMockDB) {
+      global.mockUsers = global.mockUsers || [];
+      const user = global.mockUsers.find(u => u._id === req.userId);
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      const allowedFields = [
+        'activeTheme', 'clockFormat', 'quoteCategory', 'alertSound',
+        'focusDuration', 'breakDuration', 'longBreakDuration', 'musicUrl'
+      ];
+      for (const field of allowedFields) {
+        if (req.body[field] !== undefined) {
+          user.settings[field] = req.body[field];
+        }
+      }
+      return res.json({
+        username: user.username,
+        settings: user.settings
+      });
+    }
+
     const allowedFields = [
       'activeTheme', 'clockFormat', 'quoteCategory', 'alertSound',
       'focusDuration', 'breakDuration', 'longBreakDuration', 'musicUrl'

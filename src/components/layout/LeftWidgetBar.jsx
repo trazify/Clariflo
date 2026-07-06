@@ -1,5 +1,5 @@
 import React from 'react';
-import { CheckSquare, Music, Volume2 } from 'lucide-react';
+import { CheckSquare, Music, Volume2, BarChart2 } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
 
 export const LeftWidgetBar = () => {
@@ -18,6 +18,9 @@ export const LeftWidgetBar = () => {
         </button>
         <button onClick={() => toggle('music')} className={`tb-btn ${activePanel === 'music' ? 'active' : ''}`} title="Music">
           <Music size={18} />
+        </button>
+        <button onClick={() => toggle('stats')} className={`tb-btn ${activePanel === 'stats' ? 'active' : ''}`} title="Stats">
+          <BarChart2 size={18} />
         </button>
       </div>
     </div>

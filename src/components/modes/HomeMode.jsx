@@ -1,5 +1,6 @@
 import React from 'react';
 import { useClock } from '../../hooks/useClock';
+import { QuoteDisplay } from '../ui/QuoteDisplay';
 
 export const HomeMode = () => {
   const { getFormattedTime, getGreeting } = useClock();
@@ -15,6 +16,11 @@ export const HomeMode = () => {
       <h1 className="clock-display text-[7rem] md:text-[10rem] lg:text-[13rem] text-white">
         {getFormattedTime()}
       </h1>
+
+      {/* Quote display below clock */}
+      <div className="mt-8 max-w-xl px-6 text-center">
+        <QuoteDisplay />
+      </div>
     </div>
   );
 };

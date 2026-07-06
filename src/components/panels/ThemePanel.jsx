@@ -3,6 +3,23 @@ import { X, Check } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
 import { themes } from '../../data/themes';
 
+// Animated scene preview gradients (so panel cards look alive)
+const ANIMATED_PREVIEWS = {
+  'cozy-fireplace': 'linear-gradient(160deg, #1a0500 0%, #7c2206 40%, #e85d04 70%, #ffba08 100%)',
+  'rainy-window':   'linear-gradient(160deg, #0d1117 0%, #1c2a3a 50%, #2d3f55 100%)',
+  'calm-ocean':     'linear-gradient(160deg, #0c1445 0%, #1a3a6e 50%, #2d5fa0 80%, #4a90c4 100%)',
+  'forest-stream':  'linear-gradient(160deg, #0a0f1a 0%, #0e2010 40%, #1a3020 70%, #2d5a20 100%)',
+  'snowfall':       'linear-gradient(160deg, #0a0c14 0%, #111827 40%, #1c2030 70%, #cce0ff 100%)',
+};
+
+const ANIMATED_OVERLAYS = {
+  'cozy-fireplace': '🔥',
+  'rainy-window':   '🌧️',
+  'calm-ocean':     '🌊',
+  'forest-stream':  '🌲',
+  'snowfall':       '❄️',
+};
+
 export const ThemePanel = () => {
   const { activePanel, setActivePanel, activeTheme, setActiveTheme } = useAppStore();
   const isOpen = activePanel === 'theme';
@@ -11,6 +28,7 @@ export const ThemePanel = () => {
 
   const gradients = themes.filter(t => t.type === 'gradient');
   const images = themes.filter(t => t.type === 'image');
+  const animated = themes.filter(t => t.type === 'animated');
 
   const ThemeCard = ({ theme }) => (
     <button
@@ -21,10 +39,25 @@ export const ThemePanel = () => {
     >
       {theme.type === 'gradient' ? (
         <div className="absolute inset-0" style={{ background: theme.value }} />
+      ) : theme.type === 'animated' ? (
+        <>
+          <div className="absolute inset-0" style={{ background: ANIMATED_PREVIEWS[theme.id] || '#111' }} />
+          <div className="absolute inset-0 flex items-center justify-center text-2xl opacity-60">
+            {ANIMATED_OVERLAYS[theme.id]}
+          </div>
+          {/* Shimmer pulse to hint it's animated */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.06) 50%, transparent 100%)',
+              animation: 'shimmer 2s infinite',
+            }}
+          />
+        </>
       ) : (
         <img src={theme.url} alt={theme.name} className="absolute inset-0 w-full h-full object-cover opacity-75 group-hover:opacity-90 transition-opacity" />
       )}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
       <span className="absolute bottom-1.5 left-2 text-[10px] font-semibold text-white z-10">{theme.name}</span>
       {activeTheme === theme.id && (
         <div className="absolute top-1.5 right-1.5 bg-[#7c3aed] text-white p-0.5 rounded-full">
@@ -57,6 +90,12 @@ export const ThemePanel = () => {
               <p className="text-[9px] text-white/30 font-semibold tracking-widest uppercase mb-2">Photos</p>
               <div className="grid grid-cols-2 gap-2">
                 {images.map(t => <ThemeCard key={t.id} theme={t} />)}
+              </div>
+            </div>
+            <div>
+              <p className="text-[9px] text-white/30 font-semibold tracking-widest uppercase mb-2">Live Scenes ✨</p>
+              <div className="grid grid-cols-2 gap-2">
+                {animated.map(t => <ThemeCard key={t.id} theme={t} />)}
               </div>
             </div>
           </div>

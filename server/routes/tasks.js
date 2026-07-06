@@ -10,6 +10,12 @@ router.use(authMiddleware);
 // GET /api/tasks — Get all tasks for the logged-in user
 router.get('/', async (req, res) => {
   try {
+    if (global.isMockDB) {
+      global.mockTasks = global.mockTasks || [];
+      const userTasks = global.mockTasks.filter(t => t.userId === req.userId).sort((a, b) => a.order - b.order);
+      return res.json(userTasks);
+    }
+
     const tasks = await Task.find({ userId: req.userId }).sort({ order: 1 });
     res.json(tasks);
   } catch (error) {
@@ -22,6 +28,25 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const { text } = req.body;
+
+    if (global.isMockDB) {
+      if (!text || !text.trim()) {
+        return res.status(400).json({ message: 'Task text is required' });
+      }
+      global.mockTasks = global.mockTasks || [];
+      const userTasks = global.mockTasks.filter(t => t.userId === req.userId);
+      const maxOrder = userTasks.reduce((max, t) => t.order > max ? t.order : max, -1);
+      const newTask = {
+        _id: Math.random().toString(36).substring(2, 11),
+        userId: req.userId,
+        text: text.trim(),
+        done: false,
+        order: maxOrder + 1,
+        createdAt: new Date().toISOString()
+      };
+      global.mockTasks.push(newTask);
+      return res.status(201).json(newTask);
+    }
 
     if (!text || !text.trim()) {
       return res.status(400).json({ message: 'Task text is required' });
@@ -47,6 +72,18 @@ router.post('/', async (req, res) => {
 // PUT /api/tasks/:id — Update a task (toggle done, edit text)
 router.put('/:id', async (req, res) => {
   try {
+    if (global.isMockDB) {
+      global.mockTasks = global.mockTasks || [];
+      const task = global.mockTasks.find(t => t._id === req.params.id && t.userId === req.userId);
+      if (!task) {
+        return res.status(404).json({ message: 'Task not found' });
+      }
+      if (req.body.text !== undefined) task.text = req.body.text;
+      if (req.body.done !== undefined) task.done = req.body.done;
+      if (req.body.order !== undefined) task.order = req.body.order;
+      return res.json(task);
+    }
+
     const task = await Task.findOne({ _id: req.params.id, userId: req.userId });
 
     if (!task) {
@@ -70,6 +107,20 @@ router.put('/reorder/bulk', async (req, res) => {
   try {
     const { tasks } = req.body; // [{ id, order }]
 
+    if (global.isMockDB) {
+      if (!tasks || !Array.isArray(tasks)) {
+        return res.status(400).json({ message: 'Tasks array is required' });
+      }
+      global.mockTasks = global.mockTasks || [];
+      tasks.forEach((t) => {
+        const task = global.mockTasks.find((mt) => mt._id === t.id && mt.userId === req.userId);
+        if (task) {
+          task.order = t.order;
+        }
+      });
+      return res.json({ message: 'Tasks reordered' });
+    }
+
     if (!tasks || !Array.isArray(tasks)) {
       return res.status(400).json({ message: 'Tasks array is required' });
     }
@@ -92,6 +143,16 @@ router.put('/reorder/bulk', async (req, res) => {
 // DELETE /api/tasks/:id — Delete a task
 router.delete('/:id', async (req, res) => {
   try {
+    if (global.isMockDB) {
+      global.mockTasks = global.mockTasks || [];
+      const index = global.mockTasks.findIndex(t => t._id === req.params.id && t.userId === req.userId);
+      if (index === -1) {
+        return res.status(404).json({ message: 'Task not found' });
+      }
+      global.mockTasks.splice(index, 1);
+      return res.json({ message: 'Task deleted' });
+    }
+
     const task = await Task.findOneAndDelete({ _id: req.params.id, userId: req.userId });
 
     if (!task) {

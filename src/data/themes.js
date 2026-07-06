@@ -43,4 +43,11 @@ export const themes = [
   { id: 'city-night', name: 'City Night', type: 'image', url: 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=1920&q=80' },
   { id: 'ocean-waves', name: 'Ocean Waves', type: 'image', url: 'https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=1920&q=80' },
   { id: 'mountain-lake', name: 'Mountain Lake', type: 'image', url: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1920&q=80' },
+
+  // Animated canvas scenes (works offline, no CDN dependencies)
+  { id: 'cozy-fireplace', name: '🔥 Cozy Fireplace', type: 'animated' },
+  { id: 'rainy-window',   name: '🌧️ Rainy Window',   type: 'animated' },
+  { id: 'calm-ocean',     name: '🌊 Calm Ocean',      type: 'animated' },
+  { id: 'forest-stream',  name: '🌲 Forest Stream',   type: 'animated' },
+  { id: 'snowfall',       name: '❄️ Snowfall',         type: 'animated' },
 ];
